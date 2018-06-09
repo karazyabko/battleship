@@ -1,0 +1,43 @@
+body {
+  margin: 0;
+  padding: 0;
+  font-family: sans-serif;
+  background: url('https://wallpaper-house.com/data/out/8/wallpaper2you_216345.jpg');
+  opacity: 0.8;
+}
+
+.app {
+  background-color: #fff;
+  padding-bottom: 50px;
+}
+
+.gray {
+  background-color: gray;
+}
+
+.red {
+  background-color: red;
+}
+
+.green {
+  background-color: green;
+}
+
+.centered{
+  justify-content:center;
+}
+
+#battlefield {
+  width: 302px;
+  height: 302px;
+  float: left;
+  margin: 50px;
+  border: 1px solid black;
+}
+
+#battlefield .cell{
+  width: 30px;
+  height: 30px;
+  float: left;
+  border: 1px solid black;
+}
