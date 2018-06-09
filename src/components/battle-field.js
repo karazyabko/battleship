@@ -34,11 +34,6 @@ class BattleField extends Component {
       for (let j = 0; j < 10; j++) {
         let classes = "cell";
 
-
-        if (this.props.shipsCoords && this.props.isItemInArray(this.props.shipsCoords, [i, j])) {
-          classes = classes + ' green';
-        }
-
         if (this.props.damagedShipsCoords && this.props.isItemInArray(this.props.damagedShipsCoords, [i, j])) {
           classes = classes + ' red';
         }
