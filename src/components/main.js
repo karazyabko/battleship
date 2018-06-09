@@ -40,10 +40,12 @@ class Main extends Component {
   isCorrectCoords(source, array) {
     for (let i = 0; i < array.length; i++) {
       for (let j = 0; j < source.length; j++) {
-        let wrongX = array[i][0] >= (source[j][0] - 1) && array[i][0] <= (source[j][0] + 1);
-        let wrongY = array[i][1] >= (source[j][1] - 1) && array[i][1] <= (source[j][1] + 1);
-        if (wrongX || wrongY) {
-          return false;
+        for (let sourceItem of source[j]) {
+          let wrongX = array[i][0] >= (sourceItem[0] - 1) && array[i][0] <= (sourceItem[0] + 1);
+          let wrongY = array[i][1] >= (sourceItem[1] - 1) && array[i][1] <= (sourceItem[1] + 1);
+          if (wrongX || wrongY) {
+            return false;
+          }
         }
       }
     }
@@ -66,8 +68,10 @@ class Main extends Component {
   generateShips() {
     let unavailableCoords = [];
     // generate L ship
-    let coordsArray = this.generateLShipCoords();
-    this.setUnavailableCells(unavailableCoords, coordsArray);
+    let coordsArray = [];
+    let lShipCoords = this.generateLShipCoords();
+    coordsArray.push(lShipCoords)
+    this.setUnavailableCells(unavailableCoords, lShipCoords);
 
     // generate I ship
     let iShipCoords = [];
@@ -76,7 +80,7 @@ class Main extends Component {
       iShipCoords = this.generateIShipCoords();
     } while (!this.isCorrectCoords(coordsArray, iShipCoords));
 
-    coordsArray.push(...iShipCoords);
+    coordsArray.push(iShipCoords);
     this.setUnavailableCells(unavailableCoords, iShipCoords);
 
     // generate dot ships
@@ -86,7 +90,7 @@ class Main extends Component {
       dotShip1Coords = [this.getRandomCoord(), this.getRandomCoord()];
     } while (this.isItemInArray(unavailableCoords, dotShip1Coords));
 
-    coordsArray.push(dotShip1Coords);
+    coordsArray.push([dotShip1Coords]);
     this.setUnavailableCells(unavailableCoords, [dotShip1Coords]);
 
     let dotShip2Coords = [];
@@ -95,7 +99,7 @@ class Main extends Component {
       dotShip2Coords = [this.getRandomCoord(), this.getRandomCoord()];
     } while (this.isItemInArray(unavailableCoords, dotShip2Coords));
 
-    coordsArray.push(dotShip2Coords);
+    coordsArray.push([dotShip2Coords]);
 
     this.props.finishGenerateShips(coordsArray);
 

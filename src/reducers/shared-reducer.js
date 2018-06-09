@@ -29,11 +29,11 @@ export default function(state = initialState, action) {
     case GENERATE_SHIP_FINISH:
       return {...state, shipsGenerating: false, shipsCoords: action.payload.items};
     case FIRE_SHIP_CELL:
-      const shipCellCoords = action.payload.items;
-      const filteredShipsCellCoords = state.shipsCoords.filter((item) => {
-        return shipCellCoords[0] !== item[0] || shipCellCoords[1] !== item[1]
-      });
-      return {...state, shipsCoords: filteredShipsCellCoords, damagedShipsCoords: [...state.damagedShipsCoords, shipCellCoords]};
+      const shipCellCoordsIndex = action.payload.index;
+      const damagedShipCoords = state.shipsCoords[shipCellCoordsIndex];
+      state.shipsCoords.splice(shipCellCoordsIndex, 1);
+      const newDamagedShipsCoords = [...state.damagedShipsCoords, ...damagedShipCoords];
+      return {...state, shipsCoords: state.shipsCoords, damagedShipsCoords: newDamagedShipsCoords};
     case FIRE_EMPTY_CELL:
       const emptyCellCoords = action.payload.items;
       return {...state, usedEmptyCoords: [...state.usedEmptyCoords, emptyCellCoords]};

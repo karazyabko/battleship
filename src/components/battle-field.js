@@ -14,10 +14,12 @@ class BattleField extends Component {
       if (this.ifCellUsed([x, y])) {
         this.props.toggleWarningModal();
       } else {
-        if (this.props.isItemInArray(this.props.shipsCoords, [x, y])) {
-          this.props.performShipDamagedFire([x, y]);
-        } else {
-          this.props.performEmptyFire([x, y]);
+        for (let array in this.props.shipsCoords) {
+          if (this.props.isItemInArray(this.props.shipsCoords[array], [x, y])) {
+            this.props.performShipDamagedFire(array);
+          } else {
+            this.props.performEmptyFire([x, y]);
+          }
         }
       }
     }

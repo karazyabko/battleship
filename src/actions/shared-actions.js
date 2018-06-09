@@ -34,10 +34,10 @@ export function finishGenerateShips(coords) {
   }
 }
 
-export function performShipDamagedFire(coords) {
+export function performShipDamagedFire(index) {
   return {
     type: FIRE_SHIP_CELL,
-    payload: { items: coords}
+    payload: { index: index}
   }
 }
 
