@@ -2,7 +2,8 @@ import React, { Component } from 'react';
 import BattleField from "./battle-field";
 import { Button } from 'reactstrap';
 import { connect } from 'react-redux'
-import { startGame, startGenerateShips, finishGenerateShips, toggleWarningModal, toggleCongratulationModal } from "../actions/index";
+import { startGame, startGenerateShips, finishGenerateShips, toggleWarningModal, toggleCongratulationModal,
+        toggleLoseModal } from "../actions/index";
 import ModalWindow from "./modal-window";
 
 class Main extends Component {
@@ -12,12 +13,12 @@ class Main extends Component {
     this.initGame = this.initGame.bind(this);
   }
 
-
-
   initGame() {
     this.props.startGame();
     this.props.startGenerateShips();
-    this.generateShips();
+    this.generateShips('player');
+    this.props.startGenerateShips();
+    this.generateShips('opponent');
   }
 
   isItemInArray(array, item) {
@@ -63,7 +64,7 @@ class Main extends Component {
     }
   }
 
-  generateShips() {
+  generateShips(owner) {
     let unavailableCoords = [];
     // generate L ship
     let coordsArray = this.generateLShipCoords();
@@ -97,9 +98,7 @@ class Main extends Component {
 
     coordsArray.push(dotShip2Coords);
 
-    this.props.finishGenerateShips(coordsArray);
-
-    return coordsArray;
+    this.props.finishGenerateShips(owner, coordsArray);
   }
 
   generateIShipCoords() {
@@ -224,8 +223,9 @@ class Main extends Component {
     return (
       <div className="container ">
         <div className="row centered">
-          <div className=".col-md-6 .offset-md-3">
-            <BattleField isItemInArray={this.isItemInArray.bind(this)}/>
+          <div className=".col-md-8 .offset-md-2">
+            <BattleField owner="player" getRandomCoord={this.getRandomCoord.bind(this)} isItemInArray={this.isItemInArray.bind(this)}/>
+            <BattleField owner="opponent" getRandomCoord={this.getRandomCoord.bind(this)} isItemInArray={this.isItemInArray.bind(this)}/>
           </div>
         </div>
         {this.renderStartButton()}
@@ -237,6 +237,10 @@ class Main extends Component {
                      bodyText="You win the game. But your princess is on another ship!"
                      show={this.props.showCongratulationModal}
                      toggleModal={() => this.props.toggleCongratulationModal()}/>
+        <ModalWindow headerText="You lose"
+                     bodyText="Say hello to Captain Nemo!"
+                     show={this.props.showLoseModal}
+                     toggleModal={() => this.props.toggleLoseModal()}/>
       </div>
     )
   }
@@ -246,11 +250,12 @@ function mapStateToProps(state) {
   return {
     gameStarted: state.shared.gameStarted,
     showWarningModal: state.shared.showWarningModal,
-    showCongratulationModal: state.shared.showCongratulationModal
+    showCongratulationModal: state.shared.showCongratulationModal,
+    showLoseModal: state.shared.showLoseModal
   }
 }
 
 export default connect(
       mapStateToProps,
-      { startGame, startGenerateShips, finishGenerateShips, toggleWarningModal, toggleCongratulationModal }
+      { startGame, startGenerateShips, finishGenerateShips, toggleWarningModal, toggleCongratulationModal, toggleLoseModal }
     )(Main);

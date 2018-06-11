@@ -6,7 +6,8 @@ import {
   START_GAME,
   FINISH_GAME,
   TOGGLE_WARNING_MODAL,
-  TOGGLE_CONGRATULATION_MODAL
+  TOGGLE_CONGRATULATION_MODAL,
+  TOGGLE_LOSE_MODAL
 } from "./types";
 
 export function startGame() {
@@ -15,9 +16,10 @@ export function startGame() {
   }
 }
 
-export function finishGame() {
+export function finishGame(result) {
   return {
-    type: FINISH_GAME
+    type: FINISH_GAME,
+    payload: { result: result}
   }
 }
 
@@ -27,24 +29,24 @@ export function startGenerateShips() {
   }
 }
 
-export function finishGenerateShips(coords) {
+export function finishGenerateShips(owner, coords) {
   return {
     type: GENERATE_SHIP_FINISH,
-    payload: { items: coords}
+    payload: { owner: owner, items: coords}
   }
 }
 
-export function performShipDamagedFire(coords) {
+export function performShipDamagedFire(owner, coords) {
   return {
     type: FIRE_SHIP_CELL,
-    payload: { items: coords}
+    payload: { owner: owner, items: coords}
   }
 }
 
-export function performEmptyFire(coords) {
+export function performEmptyFire(owner, coords) {
   return {
     type: FIRE_EMPTY_CELL,
-    payload: { items: coords}
+    payload: { owner: owner, items: coords}
   }
 }
 
@@ -57,5 +59,11 @@ export function toggleWarningModal() {
 export function toggleCongratulationModal() {
   return {
     type: TOGGLE_CONGRATULATION_MODAL
+  }
+}
+
+export function toggleLoseModal() {
+  return {
+    type: TOGGLE_LOSE_MODAL
   }
 }

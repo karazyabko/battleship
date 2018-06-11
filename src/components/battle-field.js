@@ -5,27 +5,51 @@ import { performShipDamagedFire, performEmptyFire, finishGame, toggleWarningModa
 class BattleField extends Component {
   componentWillReceiveProps(nextProps) {
     if (nextProps.shipsCoords.length === 0 && nextProps.gameStarted) {
-      this.props.finishGame();
+      this.props.finishGame('Lose');
+    }
+
+    if (nextProps.opponentShipsCoords.length === 0 && nextProps.gameStarted) {
+      this.props.finishGame('Win');
     }
   }
 
-  handleClick(x, y) {
+  handleClick(x, y, owner) {
     if (this.props.gameStarted) {
-      if (this.ifCellUsed([x, y])) {
-        this.props.toggleWarningModal();
+      if (owner === 'opponent') {
+        if (this.ifCellUsed([x, y])) {
+          this.props.toggleWarningModal();
+        } else {
+          if (this.props.isItemInArray(this.props.opponentShipsCoords, [x, y])) {
+            this.props.performShipDamagedFire(owner, [x, y]);
+          } else {
+            this.props.performEmptyFire(owner, [x, y]);
+            this.simulateOpponentTurn();
+          }
+        }
       } else {
         if (this.props.isItemInArray(this.props.shipsCoords, [x, y])) {
-          this.props.performShipDamagedFire([x, y]);
+          this.props.performShipDamagedFire(owner, [x, y]);
+          this.simulateOpponentTurn();
         } else {
-          this.props.performEmptyFire([x, y]);
+          this.props.performEmptyFire(owner, [x, y]);
         }
       }
     }
   }
 
+  simulateOpponentTurn() {
+    let coords = [];
+    do {
+      coords = [this.props.getRandomCoord(), this.props.getRandomCoord()];
+    } while (this.props.isItemInArray(this.props.usedEmptyCoords, coords)
+            || this.props.isItemInArray(this.props.damagedShipsCoords, coords));
+
+    this.handleClick(coords[0], coords[1], 'player');
+  }
+
   ifCellUsed(cellCoords) {
-    return this.props.isItemInArray(this.props.usedEmptyCoords, cellCoords)
-    || this.props.isItemInArray(this.props.damagedShipsCoords, cellCoords)
+    return this.props.isItemInArray(this.props.opponentUsedEmptyCoords, cellCoords)
+    || this.props.isItemInArray(this.props.opponentDamagedShipsCoords, cellCoords)
   }
 
   render() {
@@ -33,23 +57,40 @@ class BattleField extends Component {
     for (let i = 0; i < 10; i++) {
       for (let j = 0; j < 10; j++) {
         let classes = "cell";
+        if (this.props.owner === 'player') {
+          if (this.props.shipsCoords && this.props.isItemInArray(this.props.shipsCoords, [i, j])) {
+            classes = classes + ' green';
+          }
 
-        if (this.props.damagedShipsCoords && this.props.isItemInArray(this.props.damagedShipsCoords, [i, j])) {
-          classes = classes + ' red';
+          if (this.props.damagedShipsCoords && this.props.isItemInArray(this.props.damagedShipsCoords, [i, j])) {
+            classes = classes + ' red';
+          }
+
+          if (this.props.usedEmptyCoords && this.props.isItemInArray(this.props.usedEmptyCoords, [i, j])) {
+            classes = classes + ' gray';
+          }
+
+          cells.push(
+            <div className={classes} key={i * 10 + j}></div>
+          )
+        } else {
+          if (this.props.opponentDamagedShipsCoords && this.props.isItemInArray(this.props.opponentDamagedShipsCoords, [i, j])) {
+            classes = classes + ' red';
+          }
+
+          if (this.props.opponentUsedEmptyCoords && this.props.isItemInArray(this.props.opponentUsedEmptyCoords, [i, j])) {
+            classes = classes + ' gray';
+          }
+
+          cells.push(
+            <div className={classes} onClick={() => this.handleClick(i, j, this.props.owner)} key={i * 10 + j}></div>
+          )
         }
-
-        if (this.props.usedEmptyCoords && this.props.isItemInArray(this.props.usedEmptyCoords, [i, j])) {
-          classes = classes + ' gray';
-        }
-
-        cells.push(
-          <div className={classes} onClick={() => this.handleClick(i, j)} key={i * 10 + j}></div>
-        )
       }
     }
 
     return (
-      <div id="battlefield">
+      <div className="battlefield">
         {cells}
       </div>
     )
@@ -62,11 +103,15 @@ function mapStateToProps(state) {
     shipsCoords: state.shared.shipsCoords,
     usedEmptyCoords: state.shared.usedEmptyCoords,
     damagedShipsCoords: state.shared.damagedShipsCoords,
-    showCongratulationModal: state.shared.showCongratulationModal
+    opponentShipsCoords: state.shared.opponentShipsCoords,
+    opponentUsedEmptyCoords: state.shared.opponentUsedEmptyCoords,
+    opponentDamagedShipsCoords: state.shared.opponentDamagedShipsCoords,
+    showCongratulationModal: state.shared.showCongratulationModal,
+    showLoseModal: state.shared.showLoseModal
   }
 }
 
 export default connect(
   mapStateToProps,
-  { performShipDamagedFire, performEmptyFire, finishGame, toggleWarningModal }
+  { performShipDamagedFire, performEmptyFire, finishGame, toggleWarningModal}
 )(BattleField);

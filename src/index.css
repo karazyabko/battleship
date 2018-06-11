@@ -27,7 +27,7 @@ body {
   justify-content:center;
 }
 
-#battlefield {
+.battlefield {
   width: 302px;
   height: 302px;
   float: left;
@@ -35,7 +35,7 @@ body {
   border: 1px solid black;
 }
 
-#battlefield .cell{
+.battlefield .cell{
   width: 30px;
   height: 30px;
   float: left;
